@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#11131b">
+<title>Pixel Khane — Retro Arcade</title>
+<style>
+:root{
+  --bg:#10121a;--panel:#191c27;--panel2:#222637;--text:#f4f5fb;--muted:#a3a8bb;
+  --accent:#8b5cf6;--accent2:#22d3ee;--border:#303548;--shadow:0 12px 30px #0004;
+}
+body.light{
+  --bg:#f4f5fb;--panel:#fff;--panel2:#e8eaf5;--text:#181a25;--muted:#62677a;
+  --accent:#7043d8;--accent2:#087f9b;--border:#d6d9e8;--shadow:0 12px 30px #3331;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif;transition:.25s}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(1120px,92%);margin:auto}
+header{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 0}
+.logo{font-weight:900;letter-spacing:1px;font-size:1.15rem}.logo span{color:var(--accent2)}
+.navlinks{display:flex;gap:18px;color:var(--muted);font-size:.95rem}
+.navlinks a:hover{color:var(--accent2)}
+.iconbtn,.btn{border:1px solid var(--border);background:var(--panel2);color:var(--text);border-radius:12px;padding:9px 13px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:white;font-weight:700}
+.hero{padding:65px 0 45px;display:grid;grid-template-columns:1.25fr .75fr;gap:24px;align-items:center}
+.kicker{color:var(--accent2);font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:.8rem}
+h1{font-size:clamp(2.3rem,6vw,4.4rem);line-height:1.04;margin:12px 0}
+h1 .glow{color:var(--accent);text-shadow:0 0 24px color-mix(in srgb,var(--accent) 55%,transparent)}
+.hero p{color:var(--muted);max-width:600px;line-height:1.7}
+.heroart{border:1px solid var(--border);background:linear-gradient(135deg,var(--panel),var(--panel2));border-radius:24px;min-height:230px;display:grid;place-items:center;box-shadow:var(--shadow);overflow:hidden}
+.bannerart{grid-column:1/-1;min-height:0;margin-top:10px}
+.bannerart img{display:block;width:100%;height:auto;max-height:440px;object-fit:cover;border-radius:23px}
+.pixel{font-size:clamp(4rem,12vw,7rem);filter:drop-shadow(0 0 20px #8b5cf666);animation:float 3s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-12px)}}
+.toolbar{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0 25px}
+.search{flex:1;min-width:200px;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+select{background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:12px}
+.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:25px 0 12px}
+.sectionhead h2{margin:0}.muted{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.game{background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden;transition:transform .2s,border .2s;box-shadow:var(--shadow)}
+.game:hover{transform:translateY(-5px);border-color:var(--accent)}
+.cover{height:145px;display:grid;place-items:center;font-size:4rem;background:linear-gradient(140deg,var(--panel2),color-mix(in srgb,var(--accent) 22%,var(--panel2)))}
+.gamebody{padding:15px}.gamebody h3{margin:0 0 6px}.gamebody p{margin:0 0 12px;color:var(--muted);font-size:.9rem}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tag{font-size:.75rem;border:1px solid var(--border);padding:4px 8px;border-radius:99px;color:var(--muted)}
+.cardactions{display:flex;gap:8px}.cardactions .btn{flex:1}.fav{width:42px}
+.fav.active{color:#ff6b9d;border-color:#ff6b9d}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:35px;border:1px dashed var(--border);border-radius:18px}
+footer{margin-top:55px;padding:28px 0;border-top:1px solid var(--border);color:var(--muted);text-align:center}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--border);padding:12px 18px;border-radius:14px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.25s;z-index:20}
+.toast.show{opacity:1}
+@media(max-width:800px){.hero{grid-template-columns:1fr;padding-top:42px}.heroart{min-height:170px}.bannerart{min-height:0}.grid{grid-template-columns:repeat(2,1fr)}.navlinks{display:none}}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.toolbar select{flex:1}.nav{padding:12px 0}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#">🎮 PIXEL <span>KHANE</span></a>
+    <nav class="navlinks"><a href="#games">Games</a><a href="#favorites" id="favNav">Favorites</a><a href="#about">About</a></nav>
+    <button class="iconbtn" id="themeBtn" title="Toggle theme">☀️ / 🌙</button>
+  </div>
+</header>
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <div class="kicker">The arcade never ends</div>
+      <h1>Discover the <span class="glow">Pixel</span><br>Universe.</h1>
+      <p>Jump into classic-inspired adventures, discover hidden gems, and relive the golden age of gaming.</p>
+      <button class="btn primary" id="randomBtn">🎲 Surprise me</button>
+    </div>
+    <div class="heroart bannerart" aria-label="Pixel Khane retro gaming banner">
+      <img src="pixel_khane_banner.png" alt="Pixel Khane retro gaming banner">
+    </div>
+  </section>
+  <section id="games">
+    <div class="sectionhead"><h2>🕹️ Game Library</h2><span class="muted" id="count"></span></div>
+    <div class="toolbar">
+      <input class="search" id="search" placeholder="Search games..." aria-label="Search games">
+      <select id="category" aria-label="Filter category"><option value="all">All genres</option><option>Arcade</option><option>Adventure</option><option>Puzzle</option><option>Action</option><option>Platformer</option></select>
+      <select id="sort" aria-label="Sort games"><option value="default">Featured</option><option value="az">Name: A–Z</option></select>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+  <section id="favorites">
+    <div class="sectionhead"><h2>❤️ Your Favorites</h2><span class="muted">Saved on this device</span></div>
+    <div class="grid" id="favGrid"></div>
+  </section>
+  <section id="about" style="margin-top:35px">
+    <div class="sectionhead"><h2>✨ About Pixel Khane</h2></div>
+    <p class="muted">A little corner of the internet for pixel art, retro vibes, and gaming nostalgia.</p>
+  </section>
+</main>
+<footer><div class="wrap">Made with 💜 and pixels · PIXEL KHANE</div></footer>
+<div class="toast" id="toast"></div>
+<script>
+const games=[
+ {name:"Pixel Quest",genre:"Adventure",icon:"🗺️",desc:"Explore mysterious pixel worlds and uncover secrets.",tag:"Exploration"},
+ {name:"Neon Runner",genre:"Action",icon:"🏃",desc:"Dash through a glowing city at full speed.",tag:"Fast-paced"},
+ {name:"Brick Breaker",genre:"Arcade",icon:"🧱",desc:"A timeless arcade challenge with a retro twist.",tag:"Classic"},
+ {name:"Tiny Dungeon",genre:"Adventure",icon:"🗡️",desc:"Enter a tiny dungeon full of surprises.",tag:"RPG vibes"},
+ {name:"Space Bits",genre:"Arcade",icon:"🚀",desc:"Defend the galaxy in an old-school space trip.",tag:"Space"},
+ {name:"Puzzle Pop",genre:"Puzzle",icon:"🧩",desc:"Match, think, and pop your way through levels.",tag:"Brain game"},
+ {name:"Jump Legend",genre:"Platformer",icon:"🍄",desc:"Leap across colorful platforms and collect coins.",tag:"Platform"},
+ {name:"Shadow Strike",genre:"Action",icon:"🥷",desc:"A stealthy arcade-inspired adventure.",tag:"Ninja"},
+ {name:"8-Bit Racer",genre:"Arcade",icon:"🏎️",desc:"Race the clock in a pixel-perfect speed run.",tag:"Racing"}
+];
+const grid=document.getElementById("grid"),favGrid=document.getElementById("favGrid");
+const search=document.getElementById("search"),category=document.getElementById("category"),sort=document.getElementById("sort");
+const favorites=new Set(JSON.parse(localStorage.getItem("pk-favs")||"[]"));
+function card(g,fav=false){return `<article class="game"><div class="cover">${g.icon}</div><div class="gamebody"><h3>${g.name}</h3><p>${g.desc}</p><div class="tags"><span class="tag">${g.genre}</span><span class="tag">${g.tag}</span></div><div class="cardactions"><button class="btn primary" onclick="play('${g.name}')">Explore</button><button class="btn fav ${favorites.has(g.name)?'active':''}" aria-label="Toggle favorite" onclick="toggleFav('${g.name}')">${favorites.has(g.name)?'♥':'♡'}</button></div></div></article>`}
+function render(){
+ let list=games.filter(g=>(g.name.toLowerCase().includes(search.value.toLowerCase())||g.genre.toLowerCase().includes(search.value.toLowerCase()))&&(category.value==="all"||g.genre===category.value));
+ if(sort.value==="az")list.sort((a,b)=>a.name.localeCompare(b.name));
+ grid.innerHTML=list.length?list.map(g=>card(g)).join(""):`<div class="empty">No games found. Try another search! 🔎</div>`;
+ document.getElementById("count").textContent=`${list.length} games`;
+ let fs=games.filter(g=>favorites.has(g.name));favGrid.innerHTML=fs.length?fs.map(g=>card(g,true)).join(""):`<div class="empty">No favorites yet — tap ♡ on a game to save it!</div>`;
+}
+function toggleFav(name){favorites.has(name)?favorites.delete(name):favorites.add(name);localStorage.setItem("pk-favs",JSON.stringify([...favorites]));render();toast(favorites.has(name)?"Added to favorites ❤️":"Removed from favorites");}
+function play(name){toast(`${name} selected! Connect this card to your game page or file.`)}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.classList.remove("show"),2200)}
+search.addEventListener("input",render);category.addEventListener("change",render);sort.addEventListener("change",render);
+document.getElementById("randomBtn").addEventListener("click",()=>{let g=games[Math.floor(Math.random()*games.length)];toast(`🎲 Today's pick: ${g.name}`);});
+document.getElementById("themeBtn").addEventListener("click",()=>{document.body.classList.toggle("light");localStorage.setItem("pk-theme",document.body.classList.contains("light")?"light":"dark")});
+if(localStorage.getItem("pk-theme")==="light")document.body.classList.add("light");
+render();
+</script>
+</body>
+</html>
